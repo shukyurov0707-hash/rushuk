@@ -93,6 +93,7 @@ const defaults={subs:30, goals:[
 {n:95000,title:"Последний рывок",text:"Выполнить 3 задания за один день, выбранных аудиторией.",done:false},
 {n:100000,title:"Мы сделали это",text:"Финальный челлендж первого сезона — сделать нечто настолько масштабное, чтобы это стало кульминацией всего пути от 30 до 100K.",done:false}
 ],title:"Первые 100",text:"Первое испытание — доказать, что этот путь действительно начинается."};
+data.goals = defaults.goals;
 let prev=data.goals[data.goals.indexOf(next)-1]?.n||0;
 let pct=Math.max(0,Math.min(100,(data.subs-prev)/(next.n-prev)*100));
 document.getElementById("nextGoal").textContent=fmt(next.n);
