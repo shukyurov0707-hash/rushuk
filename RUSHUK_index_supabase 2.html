@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RUSHUK — путь до 100K</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#070709;--panel:#101014;--line:#25252d;--text:#f5f5f7;--muted:#8d8d99;--accent:#fff;--green:#b7ff62}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 70% 0%,#202025 0,#0b0b0e 32%,#070709 65%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+nav{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:22px 5vw;background:linear-gradient(#070709e8,transparent);backdrop-filter:blur(8px)}
+.logo{font-weight:900;letter-spacing:.14em;font-size:13px}.navlinks{display:flex;gap:22px;font-size:12px;color:var(--muted)}.navlinks a{color:inherit;text-decoration:none}.navlinks a:hover{color:#fff}
+main{max-width:1240px;margin:auto;padding:150px 5vw 100px}.eyebrow{font-size:11px;letter-spacing:.25em;color:var(--muted);text-transform:uppercase}.hero{min-height:650px;display:flex;flex-direction:column;justify-content:center;position:relative}.hero h1{font-size:clamp(50px,9vw,126px);line-height:.88;letter-spacing:-.075em;max-width:1050px;margin:18px 0 35px;text-transform:uppercase}.hero h1 span{color:transparent;-webkit-text-stroke:1px #777}.heroSub{max-width:520px;color:#a9a9b1;line-height:1.6;font-size:15px}
+.orb{position:absolute;width:520px;height:520px;border-radius:50%;right:-100px;top:80px;background:radial-gradient(circle at 35% 30%,#fff 0,#aaa 2%,#3d3d43 11%,#111116 43%,transparent 68%);filter:blur(1px);opacity:.42;animation:float 8s ease-in-out infinite}.orb:after{content:"";position:absolute;inset:40px;border:1px solid #ffffff22;border-radius:50%;animation:spin 18s linear infinite}
+@keyframes float{50%{transform:translateY(-18px) scale(1.03)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.hero>*{animation:rise .8s both}.hero h1{animation-delay:.08s}.heroSub{animation-delay:.18s}
+.stat{margin-top:65px;display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:end}.big{font-size:clamp(64px,10vw,130px);font-weight:800;letter-spacing:-.08em;line-height:.8}.big small{font-size:14px;letter-spacing:.18em;color:var(--muted);display:block;margin-top:24px;font-weight:500}.next{text-align:right}.next .label{color:var(--muted);font-size:11px;letter-spacing:.18em}.next strong{font-size:30px;display:block;margin:8px 0}
+.bar{height:6px;background:#222229;border-radius:20px;overflow:hidden;margin-top:18px}.fill{height:100%;width:0;background:linear-gradient(90deg,#fff,#999);border-radius:20px;transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.section{padding:110px 0}.sectionHead{display:flex;justify-content:space-between;align-items:end;margin-bottom:35px}.section h2{font-size:42px;letter-spacing:-.05em;margin:6px 0}.count{font-size:12px;color:var(--muted)}
+.timeline{position:relative}.timeline:before{content:"";position:absolute;left:26px;top:0;bottom:0;width:1px;background:#292930}.goal{position:relative;display:grid;grid-template-columns:80px 1fr 160px;gap:25px;padding:0 0 55px;opacity:.45;transition:.4s}.goal.unlocked,.goal.current{opacity:1}.dot{width:53px;height:53px;border:1px solid #35353e;border-radius:50%;display:grid;place-items:center;background:#09090c;font-size:11px;z-index:1}.current .dot{border-color:#fff;box-shadow:0 0 35px #fff3}.goal h3{font-size:28px;margin:0 0 9px;letter-spacing:-.03em}.goal p{margin:0;color:#8f8f99;line-height:1.5}.badge{text-align:right;font-size:10px;letter-spacing:.16em;color:#777}.unlocked .badge{color:var(--green)}.current .badge{color:#fff}
+.card{background:linear-gradient(135deg,#121216,#0c0c0f);border:1px solid #26262e;border-radius:24px;padding:30px;position:relative;overflow:hidden}.card:after{content:"";position:absolute;width:250px;height:250px;right:-120px;top:-150px;background:#fff;filter:blur(90px);opacity:.05}
+.challenge{display:grid;grid-template-columns:1fr auto;gap:35px;align-items:center}.challenge h3{font-size:26px;margin:8px 0}.challenge p{color:#8d8d96;margin:0;max-width:650px;line-height:1.6}.pill{border:1px solid #393940;border-radius:999px;padding:12px 17px;font-size:10px;letter-spacing:.16em;white-space:nowrap}
+footer{border-top:1px solid #222229;padding:35px 5vw;color:#676771;font-size:11px;display:flex;justify-content:space-between}
+#admin{display:none}.admin{max-width:900px;margin:auto;padding:120px 5vw}.admin h1{font-size:54px;letter-spacing:-.06em}.form{display:grid;gap:12px}.form input,.form textarea{background:#111116;color:#fff;border:1px solid #292930;border-radius:12px;padding:15px;font:inherit}.form button{background:#fff;color:#050505;border:0;border-radius:12px;padding:15px;font-weight:800;cursor:pointer}.adminbar{display:flex;gap:10px;flex-wrap:wrap;margin:25px 0}.adminbar button{background:#15151b;color:#fff;border:1px solid #303039;border-radius:10px;padding:10px 14px;cursor:pointer}
+@media(max-width:700px){.navlinks{display:flex;gap:8px}.navlinks a:not(.adminLink){display:none}.adminLink{display:block!important;padding:9px 12px;border:1px solid #444;border-radius:999px;background:#fff;color:#050505!important;font-weight:800}.orb{width:330px;height:330px;right:-150px;top:110px;opacity:.28}.hero{min-height:600px}.stat{grid-template-columns:1fr;gap:35px}.next{text-align:left}.goal{grid-template-columns:65px 1fr}.badge{grid-column:2;text-align:left}.timeline:before{left:25px}.challenge{grid-template-columns:1fr}footer{display:block}footer span{display:block;margin-top:10px}}
+</style>
+</head>
+<body>
+<nav><div class="logo">RUSHUK</div><div class="navlinks"><a href="#progress">ПРОГРЕСС</a><a href="#goals">ЦЕЛИ</a><a href="#challenge">ЗАДАНИЕ</a><a class="adminLink" href="#admin" onclick="openAdmin();return false">ADMIN</a></div></nav>
+
+<div id="public">
+<main>
+<section class="hero">
+<div class="orb"></div>
+<div class="eyebrow">личный эксперимент · 2026 →</div>
+<h1>RUSHUK<br><span>до 100K.</span></h1>
+<p class="heroSub">Каждая новая отметка подписчиков открывает следующее испытание. Здесь нет красивой версии пути — только реальные цифры, цели и то, что происходит после них.</p>
+<div class="stat" id="progress">
+<div><div class="big" id="subs">0</div><small>ПОДПИСЧИКОВ</small></div>
+<div class="next"><div class="label">СЛЕДУЮЩАЯ ЦЕЛЬ</div><strong id="nextGoal">15 000</strong><div class="bar"><div class="fill" id="fill"></div></div><div class="label" id="remaining" style="margin-top:12px">—</div></div>
+</div>
+</section>
+
+<section class="section" id="goals">
+<div class="sectionHead"><div><div class="eyebrow">01 / milestones</div><h2>Цели.</h2></div><div class="count" id="goalCount"></div></div>
+<div class="timeline" id="timeline"></div>
+</section>
+
+<section class="section" id="challenge">
+<div class="sectionHead"><div><div class="eyebrow">02 / next move</div><h2>Следующее испытание.</h2></div></div>
+<div class="card challenge"><div><div class="eyebrow">АКТИВНОЕ ЗАДАНИЕ</div><h3 id="challengeTitle"></h3><p id="challengeText"></p></div><div class="pill" id="challengeStatus">LOCKED</div></div>
+</section>
+</main>
+<footer><span>RUSHUK / PUBLIC TRACKER</span><span>Обновляется в реальном времени</span></footer>
+</div>
+
+<div id="admin" class="admin">
+<div class="eyebrow">private dashboard</div><h1>Управление.</h1>
+<div id="authLogin" class="card">
+<div class="form">
+<label>Email</label><input id="loginEmail" type="email" autocomplete="email" placeholder="Твоя почта">
+<label>Пароль</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Пароль">
+<div class="adminbar"><button onclick="loginAdmin()">Войти</button><button onclick="closeAdmin()">← На сайт</button></div>
+<p style="color:#777;font-size:12px">Доступ только для твоего аккаунта.</p>
+</div></div>
+<div id="authPanel" class="card" style="display:none">
+<div class="form">
+<label>Текущее количество подписчиков</label><input id="adminSubs" type="number" min="0">
+<p style="color:#777;font-size:12px">Задания открываются автоматически по количеству подписчиков.</p>
+<div class="adminbar"><button onclick="saveAdmin()">Сохранить прогресс</button><button onclick="logoutAdmin()">Выйти</button><button onclick="closeAdmin()">← На сайт</button></div>
+<p id="saveStatus" style="color:#777;font-size:12px">Данные хранятся в Supabase и видны всем посетителям.</p>
+</div></div>
+</div>
+
+<script>
+const defaults={
+  subs:30,
+  goals:[
+    {n:100,title:"Первый шаг",text:"Выложить видео, где ты рассказываешь, зачем вообще начал этот путь и чего хочешь достичь.",done:false},
+    {n:250,title:"Разгон",text:"Провести целый день, выполняя только запланированные задачи — без прокрастинации. Показать день от начала до конца.",done:false},
+    {n:500,title:"Первый результат",text:"Снять видео о своей первой серьёзной ошибке на пути и рассказать, чему она тебя научила.",done:false},
+    {n:1000,title:"Первый рубеж",text:"24 часа без социальных сетей, кроме публикации контента. Показать результат.",done:false},
+    {n:5000,title:"Нас стало больше",text:"Снять видео полностью по идее подписчиков — выбрать самый залайканный комментарий и выполнить его.",done:false},
+    {n:10000,title:"Первые 10К",text:"Показать то, что обычно остаётся за кадром: полный день твоей жизни без постановки.",done:false},
+    {n:15000,title:"Новая планка",text:"Сделать видео, которое ты давно хотел снять, но боялся реакции людей.",done:false},
+    {n:20000,title:"Без обратного пути",text:"На 24 часа полностью отказаться от одной привычки, которая мешает твоему развитию.",done:false},
+    {n:25000,title:"Четверть пути",text:"Позволить подписчикам выбрать тебе челлендж и выполнить его без права отказаться.",done:false},
+    {n:30000,title:"Набираем ход",text:"Снять контент за один день сразу в 5 разных местах и сделать из этого один большой ролик.",done:false},
+    {n:35000,title:"Выше масштаб",text:"7 дней подряд каждый день выполнять одно действие, которое ты обычно откладываешь.",done:false},
+    {n:40000,title:"Новый масштаб",text:"Сделать самый большой по масштабу ролик на тот момент — привлечь других людей или авторов и объединить их в одном видео.",done:false},
+    {n:45000,title:"Почти половина",text:"Показать подписчикам свою неделю без единого скрытого момента — успехи, провалы, деньги, работу, ошибки.",done:false},
+    {n:50000,title:"Половина пути",text:"Сделать большой офлайн-челлендж, который будет полностью выбран аудиторией.",done:false},
+    {n:55000,title:"После 50К",text:"Выполнить задание, которое выберут случайные подписчики из нескольких вариантов.",done:false},
+    {n:60000,title:"Территория роста",text:"Попробовать что-то абсолютно новое, чем ты никогда раньше не занимался, и показать весь процесс.",done:false},
+    {n:65000,title:"Ещё ближе",text:"Провести 24 часа, полностью следуя плану, который составят твои подписчики.",done:false},
+    {n:70000,title:"70К",text:"Собрать команду из подписчиков и вместе создать один большой проект за 24 часа.",done:false},
+    {n:75000,title:"Три четверти",text:"Исполнить самое безумное безопасное задание, которое набрало больше всего голосов у аудитории.",done:false},
+    {n:80000,title:"Финишная прямая",text:"На неделю максимально изменить свой привычный режим и задокументировать результат.",done:false},
+    {n:85000,title:"Почти там",text:"Сделать ролик, который полностью строится вокруг историй и вопросов твоих подписчиков.",done:false},
+    {n:90000,title:"Последние 10К",text:"Провести большой день с подписчиками офлайн и показать его целиком.",done:false},
+    {n:95000,title:"Последний рывок",text:"Выполнить 3 задания за один день, выбранных аудиторией.",done:false},
+    {n:100000,title:"Мы сделали это",text:"Финальный челлендж первого сезона — сделать нечто настолько масштабное, чтобы это стало кульминацией всего пути от 30 до 100K.",done:false}
+  ]
+};
+
+const SUPABASE_URL="https://mskzrsijfxmimkbphajk.supabase.co";
+const SUPABASE_KEY="sb_publishable_Xs_xay0mLKcvGbMsgov6jA_LHHHW5vI";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let data=JSON.parse(JSON.stringify(defaults));
+
+function fmt(n){return Number(n).toLocaleString("ru-RU")}
+function getNext(){return data.goals.find(g=>data.subs<g.n)||data.goals[data.goals.length-1]}
+function getCurrentIndex(){return data.goals.findIndex(g=>data.subs<g.n)}
+function render(){
+ const next=getNext(),idx=getCurrentIndex(),prev=idx>0?data.goals[idx-1].n:0;
+ const pct=next.n===prev?100:Math.max(0,Math.min(100,(data.subs-prev)/(next.n-prev)*100));
+ document.getElementById("subs").textContent=fmt(data.subs);
+ document.getElementById("nextGoal").textContent=fmt(next.n);
+ document.getElementById("fill").style.width=pct+"%";
+ document.getElementById("remaining").textContent=data.subs>=100000?"100K ДОСТИГНУТО":"ОСТАЛОСЬ "+fmt(Math.max(0,next.n-data.subs));
+ document.getElementById("goalCount").textContent=data.goals.length+" ЭТАПОВ";
+ document.getElementById("timeline").innerHTML=data.goals.map((g,i)=>{const unlocked=data.subs>=g.n,current=!unlocked&&i===idx;return `<div class="goal ${unlocked?"unlocked":""} ${current?"current":""}"><div class="dot">${String(i+1).padStart(2,"0")}</div><div><h3>${fmt(g.n)}</h3><p>${unlocked?`${g.title} — ${g.text}`:`${g.title} — 🔒 Задание скрыто до достижения цели.`}</p></div><div class="badge">${unlocked?"UNLOCKED ✓":current?"CURRENT":"LOCKED ↗"}</div></div>`}).join("");
+ const active=idx>=0?data.goals[idx]:data.goals[data.goals.length-1];
+ document.getElementById("challengeTitle").textContent=idx>=0?active.title:"Мы сделали это";
+ document.getElementById("challengeText").textContent=idx>=0?(data.subs>=active.n?active.text:"Задание скрыто. Достигни "+fmt(active.n)+" подписчиков, чтобы открыть его."):data.goals[data.goals.length-1].text;
+ document.getElementById("challengeStatus").textContent=idx>=0?"UNTIL "+fmt(active.n):"COMPLETED";
+ const a=document.getElementById("adminSubs"); if(a)a.value=data.subs;
+}
+async function loadProgress(){
+ const {data:row,error}=await supabaseClient.from("rushuk_progress").select("subscribers").eq("id",1).maybeSingle();
+ if(!error&&row){data.subs=Number(row.subscribers)||30;data.goals.forEach(g=>g.done=data.subs>=g.n)}
+ render();
+}
+async function saveAdmin(){
+ const {data:sd}=await supabaseClient.auth.getSession(); if(!sd.session){alert("Сначала войди в админку.");return}
+ const value=Math.max(0,Number(document.getElementById("adminSubs").value)||0);
+ const {error}=await supabaseClient.from("rushuk_progress").update({subscribers:value,updated_at:new Date().toISOString()}).eq("id",1);
+ if(error){alert("Ошибка сохранения: "+error.message);return}
+ data.subs=value;data.goals.forEach(g=>g.done=value>=g.n);render();
+ document.getElementById("saveStatus").textContent="Сохранено ✓ Теперь этот прогресс виден всем.";
+}
+async function loginAdmin(){
+ const email=document.getElementById("loginEmail").value.trim(),password=document.getElementById("loginPassword").value;
+ if(!email||!password){alert("Введи email и пароль.");return}
+ const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+ if(error){alert("Не удалось войти: "+error.message);return}
+ showAdminPanel();
+}
+async function logoutAdmin(){await supabaseClient.auth.signOut();showLogin()}
+function showLogin(){document.getElementById("authLogin").style.display="block";document.getElementById("authPanel").style.display="none"}
+function showAdminPanel(){document.getElementById("authLogin").style.display="none";document.getElementById("authPanel").style.display="block";render()}
+async function openAdmin(){document.getElementById("public").style.display="none";document.getElementById("admin").style.display="block";window.scrollTo(0,0);const {data:sd}=await supabaseClient.auth.getSession();sd.session?showAdminPanel():showLogin()}
+function closeAdmin(){document.getElementById("admin").style.display="none";document.getElementById("public").style.display="block";window.scrollTo(0,0)}
+loadProgress();
+setInterval(loadProgress,10000);
+</script></script>
+</body></html>
